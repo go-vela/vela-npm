@@ -31,5 +31,6 @@ jobs:
       with:
         name: target/vela-npm
         cache: true
+        dockerfile: build/Dockerfile
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
