@@ -226,7 +226,7 @@ bump-deps-full: check
 docker-build:
 	@echo
 	@echo "### Building vela-npm:local image"
-	@docker build --no-cache -f build/Dockerfile -t vela-npm:local .
+	@docker build --no-cache -t vela-npm:local .
 
 # The `docker-run` target is intended to execute
 # the Docker image for the plugin.
