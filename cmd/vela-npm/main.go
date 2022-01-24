@@ -4,19 +4,34 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"os"
 	"strings"
 
 	"github.com/go-vela/vela-npm/internal/npm"
+	"github.com/go-vela/vela-npm/version"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 )
 
 func main() {
+	// capture application version information
+	v := version.New()
+
+	// serialize the version information as pretty JSON
+	bytes, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// output the version information to stdout
+	fmt.Fprintf(os.Stdout, "%s\n", string(bytes))
+
 	app := &cli.App{
 		Name:      "vela-npm",
 		Usage:     "Vela npm plugin for publishing NodeJS packages",
-		Version:   "2.1.0",
+		Version:   v.Semantic(),
 		HelpName:  "vela-npm",
 		Copyright: "Copyright (c) 2022 Target Brands, Inc. All rights reserved.",
 		Authors: []*cli.Author{
@@ -158,7 +173,7 @@ func main() {
 		},
 	}
 
-	err := app.Run(os.Args)
+	err = app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
 	}
