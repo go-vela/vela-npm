@@ -146,7 +146,7 @@ linters:
   # - wrapcheck           - style preference
 
 # This section provides the configuration for how golangci
-# will report the issues it finds.
+# will report the issues it finds. 
 issues:
   # Excluding configuration per-path, per-linter, per-text and per-source
   exclude-rules:

@@ -10,6 +10,7 @@ func TestConfig_Validate_Valid(t *testing.T) {
 		UserName: "testuser",
 	}
 	p, _, _ := createTestPlugin(t, c)
+
 	err := p.Validate()
 	if err != nil {
 		t.Error(err)
@@ -21,6 +22,7 @@ func TestConfig_Validate_NoOS(t *testing.T) {
 		UserName: "testuser",
 	}
 	p, _, _ := createTestPlugin(t, c)
+
 	err := p.Validate()
 	if err != nil {
 		t.Error(err)
@@ -30,6 +32,7 @@ func TestConfig_Validate_NoOS(t *testing.T) {
 func TestConfig_Validate_NoUserName(t *testing.T) {
 	c := &Config{}
 	p, _, _ := createTestPlugin(t, c)
+
 	err := p.Validate()
 	if err == nil {
 		t.Fail()
@@ -41,6 +44,7 @@ func TestConfig_Validate_Token(t *testing.T) {
 		Token: "token_abc",
 	}
 	p, _, _ := createTestPlugin(t, c)
+
 	err := p.Validate()
 	if err != nil {
 		t.Fail()
@@ -66,10 +70,12 @@ func TestConfig_Validate_NormalizeAuditLevel_Info(t *testing.T) {
 		AuditLevel: "l",
 	}
 	p, _, _ := createTestPlugin(t, c)
+
 	err := p.Validate()
 	if err != nil {
 		t.Error(err)
 	}
+
 	if c.AuditLevel != Low {
 		t.Error("AuditLevel not normalized")
 	}
@@ -81,10 +87,12 @@ func TestConfig_Validate_NormalizeAuditLevel_Default(t *testing.T) {
 		AuditLevel: "what",
 	}
 	p, _, _ := createTestPlugin(t, c)
+
 	err := p.Validate()
 	if err != nil {
 		t.Error(err)
 	}
+
 	if c.AuditLevel != Low {
 		t.Error("AuditLevel not defaulted")
 	}
@@ -96,6 +104,7 @@ func TestConfig_Validate_Access_Public(t *testing.T) {
 		Access:   "public",
 	}
 	p, _, _ := createTestPlugin(t, c)
+
 	err := p.Validate()
 	if err != nil {
 		t.Error(err)
@@ -108,6 +117,7 @@ func TestConfig_Validate_Access_Restricted(t *testing.T) {
 		Access:   "restricted",
 	}
 	p, _, _ := createTestPlugin(t, c)
+
 	err := p.Validate()
 	if err != nil {
 		t.Error(err)
@@ -119,6 +129,7 @@ func TestConfig_Validate_Access_NotRecognized(t *testing.T) {
 		Access:   "protected",
 	}
 	p, _, _ := createTestPlugin(t, c)
+
 	err := p.Validate()
 	if err == nil {
 		t.Error(err)
@@ -132,6 +143,7 @@ func TestConfig_Validate_Workspace(t *testing.T) {
 		Workspace:  "example",
 	}
 	p, _, _ := createTestPlugin(t, c)
+
 	err := p.Validate()
 	if err == nil {
 		t.Error(err)

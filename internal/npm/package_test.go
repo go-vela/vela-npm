@@ -18,7 +18,9 @@ func TestPackage_Validate_NoRegistry(t *testing.T) {
 		},
 	}
 	err := p.Validate("")
+
 	logrus.Warn(err)
+
 	if err != nil {
 		t.Fail()
 	}
@@ -32,7 +34,9 @@ func TestPackage_Validate_NoName(t *testing.T) {
 		},
 	}
 	err := p.Validate("")
+
 	logrus.Warn(err)
+
 	if err == nil {
 		t.Fail()
 	}
@@ -46,7 +50,9 @@ func TestPackage_Validate_NoVersion(t *testing.T) {
 		},
 	}
 	err := p.Validate("")
+
 	logrus.Warn(err)
+
 	if err == nil {
 		t.Fail()
 	}
@@ -61,7 +67,9 @@ func TestPackage_Validate_BadVersion(t *testing.T) {
 		},
 	}
 	err := p.Validate("")
+
 	logrus.Warn(err)
+
 	if err == nil {
 		t.Fail()
 	}
@@ -76,7 +84,9 @@ func TestPackage_Validate_RegistryMismatch(t *testing.T) {
 		},
 	}
 	err := p.Validate("otherRegistry")
+
 	logrus.Warn(err)
+
 	if err == nil {
 		t.Fail()
 	}

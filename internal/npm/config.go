@@ -1,6 +1,7 @@
 // Copyright (c) 2022 Target Brands, Inc. All rights reserved.
 //
 // Use of this source code is governed by the LICENSE file in this repository.
+
 package npm
 
 import (
@@ -11,7 +12,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// Config inputs
+// Config inputs.
 type Config struct {
 	Token           string
 	UserName        string
@@ -32,22 +33,22 @@ type Config struct {
 }
 
 const (
-	// Low audit-level low
+	// Low audit-level low.
 	Low = "low"
-	// Moderate audit-level moderate
+	// Moderate audit-level moderate.
 	Moderate = "moderate"
-	// High audit-level high
+	// High audit-level high.
 	High = "high"
-	// Critical audit-level critical
+	// Critical audit-level critical.
 	Critical = "critical"
-	// None used for skipping audit
+	// None used for skipping audit.
 	None = "none"
 )
 
-// DefaultRegistry is the default URL for npm
+// DefaultRegistry is the default URL for npm.
 const DefaultRegistry = "https://registry.npmjs.org"
 
-// Validate assures plugin is configured correctly
+// Validate assures plugin is configured correctly.
 func (p *Config) Validate() error {
 	if len(p.Token) == 0 {
 		if len(p.UserName) == 0 {
@@ -77,7 +78,7 @@ func (p *Config) Validate() error {
 	if len(p.Tag) != 0 {
 		_, err := semver.NewVersion(p.Tag)
 		if err == nil {
-			return errors.New("Tags should not have semantic versioning")
+			return errors.New("tags should not have semantic versioning")
 		}
 	}
 
@@ -94,8 +95,10 @@ func (p *Config) Validate() error {
 		p.AuditLevel = None
 	default:
 		log.Warn("audit_level is not recognized, the npm default (low)")
+
 		p.AuditLevel = Low
 	}
+
 	log.WithFields(log.Fields{
 		"audit-level": p.AuditLevel,
 	}).Debug("audit level set")
@@ -113,7 +116,7 @@ func (p *Config) Validate() error {
 
 	// workspaces should either be all or one
 	if len(p.Workspace) > 0 && p.Workspaces {
-		return errors.New("You must either specify a workspace or all workspaces, but not both")
+		return errors.New("you must either specify a workspace or all workspaces, but not both")
 	}
 
 	return nil

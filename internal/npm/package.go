@@ -22,18 +22,18 @@ type publishConfig struct {
 	Registry string `json:"registry"`
 }
 
-// Validate makes sure basic package information is present
+// Validate makes sure basic package information is present.
 func (p *packageJSON) Validate(registry string) error {
 	if len(p.Name) == 0 {
-		return errors.New("Name not found in package.json")
+		return errors.New("name not found in package.json")
 	}
 
 	if len(p.Version) == 0 {
-		return errors.New("Version not found in package.json")
+		return errors.New("version not found in package.json")
 	}
 
 	if _, err := semver.NewConstraint(p.Version); err != nil {
-		return fmt.Errorf("Package version error: %w", err)
+		return fmt.Errorf("package version error: %w", err)
 	}
 
 	// make sure given registry matches what's in "publishConfig"
@@ -42,6 +42,7 @@ func (p *packageJSON) Validate(registry string) error {
 		if p.PublishConfig.Registry != registry {
 			return fmt.Errorf("PublishConfig registry %s does not match given registry %s", p.PublishConfig.Registry, registry)
 		}
+
 		log.Trace("Registry matches the registry parameter")
 	}
 

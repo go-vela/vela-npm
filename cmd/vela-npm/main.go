@@ -1,6 +1,7 @@
 // Copyright (c) 2022 Target Brands, Inc. All rights reserved.
 //
 // Use of this source code is governed by the LICENSE file in this repository.
+
 package main
 
 import (
@@ -173,8 +174,7 @@ func main() {
 		},
 	}
 
-	err = app.Run(os.Args)
-	if err != nil {
+	if err = app.Run(os.Args); err != nil {
 		log.Fatal(err)
 	}
 }

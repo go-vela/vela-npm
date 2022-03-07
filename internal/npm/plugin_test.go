@@ -25,6 +25,7 @@ func createTestPlugin(t *testing.T, c *Config) (*plugin, *test.MockOSContext, af
 	defer ctrl.Finish()
 	m := test.NewMockOSContext(ctrl)
 	a := &afero.Afero{Fs: afero.NewMemMapFs()}
+
 	return &plugin{config: c, cli: m, os: a}, m, a.Fs
 }
 
@@ -71,11 +72,13 @@ func TestPlugin_verifyPackage_Valid(t *testing.T) {
 		Name:    "vela-npm",
 		Version: "1.0.0",
 	}
+
 	jsonContents, err := json.Marshal(testPackage)
 	if err != nil {
 		t.Fail()
 	}
-	err = afero.WriteFile(fs, "package.json", []byte(jsonContents), 0644)
+
+	err = afero.WriteFile(fs, "package.json", jsonContents, 0644)
 	if err != nil {
 		t.Fail()
 	}
@@ -106,22 +109,26 @@ func TestPlugin_createNpmrc_CreatesFile(t *testing.T) {
 	}
 	p, mock, fs := createTestPlugin(t, c)
 	home := path.Join("usr", "mctestface")
-	fs.MkdirAll(home, 0755)
+	fs.MkdirAll(home, 0755) // nolint: errcheck // testing
 	mock.
 		EXPECT().
 		GetHomeDir().
 		Return(home, nil)
+
 	err := p.createNpmrc()
 	if err != nil {
 		t.Error(err)
 	}
+
 	f, err := afero.ReadFile(fs, path.Join(home, ".npmrc"))
 	if err != nil {
 		t.Error(err)
 	}
+
 	npmrc := string(f)
-	auth := b64.StdEncoding.EncodeToString([]byte(fmt.Sprint("testuser:testpass")))
+	auth := b64.StdEncoding.EncodeToString([]byte("testuser:testpass"))
 	testNpmrc := fmt.Sprintf("%s_auth=%s\n", npmrcDefaults, auth)
+
 	if npmrc != testNpmrc {
 		t.Errorf("%s != %s", npmrc, testNpmrc)
 	}
@@ -134,21 +141,25 @@ func TestPlugin_createNpmrc_AuthToken(t *testing.T) {
 	}
 	p, mock, fs := createTestPlugin(t, c)
 	home := path.Join("usr", "mctestface")
-	fs.MkdirAll(home, 0755)
+	fs.MkdirAll(home, 0755) // nolint: errcheck // testing
 	mock.
 		EXPECT().
 		GetHomeDir().
 		Return(home, nil)
+
 	err := p.createNpmrc()
 	if err != nil {
 		t.Error(err)
 	}
+
 	f, err := afero.ReadFile(fs, path.Join(home, ".npmrc"))
 	if err != nil {
 		t.Error(err)
 	}
+
 	npmrc := string(f)
 	testNpmrc := fmt.Sprintf("%s//registry.test.com/:_authToken=\"%s\"\nregistry=%s\n", npmrcDefaults, c.Token, c.Registry)
+
 	if npmrc != testNpmrc {
 		t.Errorf("%s != %s", npmrc, testNpmrc)
 	}
@@ -162,7 +173,7 @@ func TestPlugin_createNpmrc_Registry(t *testing.T) {
 	}
 	p, mock, fs := createTestPlugin(t, c)
 	home := path.Join("usr", "mctestface")
-	fs.MkdirAll(home, 0755)
+	fs.MkdirAll(home, 0755) // nolint: errcheck // testing
 	mock.
 		EXPECT().
 		GetHomeDir().
@@ -177,9 +188,11 @@ func TestPlugin_createNpmrc_Registry(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	npmrc := string(f)
-	auth := b64.StdEncoding.EncodeToString([]byte(fmt.Sprint("testuser:testpass")))
+	auth := b64.StdEncoding.EncodeToString([]byte("testuser:testpass"))
 	testNpmrc := fmt.Sprintf("%s_auth=%s\nregistry=%s\n", npmrcDefaults, auth, c.Registry)
+
 	if npmrc != testNpmrc {
 		t.Errorf("%s != %s", npmrc, testNpmrc)
 	}
@@ -193,22 +206,26 @@ func TestPlugin_createNpmrc_Email(t *testing.T) {
 	}
 	p, mock, fs := createTestPlugin(t, c)
 	home := path.Join("usr", "mctestface")
-	fs.MkdirAll(home, 0755)
+	fs.MkdirAll(home, 0755) // nolint: errcheck // testing
 	mock.
 		EXPECT().
 		GetHomeDir().
 		Return(home, nil)
+
 	err := p.createNpmrc()
 	if err != nil {
 		t.Error(err)
 	}
+
 	f, err := afero.ReadFile(fs, path.Join(home, ".npmrc"))
 	if err != nil {
 		t.Error(err)
 	}
+
 	npmrc := string(f)
-	auth := b64.StdEncoding.EncodeToString([]byte(fmt.Sprint("testuser:testpass")))
+	auth := b64.StdEncoding.EncodeToString([]byte("testuser:testpass"))
 	testNpmrc := fmt.Sprintf("%s_auth=%s\nemail=%s\n", npmrcDefaults, auth, c.Email)
+
 	if npmrc != testNpmrc {
 		t.Errorf("%s != %s", npmrc, testNpmrc)
 	}
@@ -223,7 +240,7 @@ func TestPlugin_createNpmrc_StrictSSLSet(t *testing.T) {
 	}
 	p, mock, fs := createTestPlugin(t, c)
 	home := path.Join("usr", "mctestface")
-	fs.MkdirAll(home, 0755)
+	fs.MkdirAll(home, 0755) // nolint: errcheck // testing
 	mock.
 		EXPECT().
 		GetHomeDir().
@@ -238,9 +255,11 @@ func TestPlugin_createNpmrc_StrictSSLSet(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	npmrc := string(f)
-	auth := b64.StdEncoding.EncodeToString([]byte(fmt.Sprint("testuser:testpass")))
+	auth := b64.StdEncoding.EncodeToString([]byte("testuser:testpass"))
 	testNpmrc := fmt.Sprintf("%s_auth=%s\nstrict-ssl=true\n", npmrcDefaults, auth)
+
 	if npmrc != testNpmrc {
 		t.Errorf("%s != %s", npmrc, testNpmrc)
 	}
@@ -255,7 +274,7 @@ func TestPlugin_createNpmrc_AlwaysAuthSet(t *testing.T) {
 	}
 	p, mock, fs := createTestPlugin(t, c)
 	home := path.Join("usr", "mctestface")
-	fs.MkdirAll(home, 0755)
+	fs.MkdirAll(home, 0755) // nolint: errcheck // testing
 	mock.
 		EXPECT().
 		GetHomeDir().
@@ -270,9 +289,11 @@ func TestPlugin_createNpmrc_AlwaysAuthSet(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	npmrc := string(f)
-	auth := b64.StdEncoding.EncodeToString([]byte(fmt.Sprint("testuser:testpass")))
+	auth := b64.StdEncoding.EncodeToString([]byte("testuser:testpass"))
 	testNpmrc := fmt.Sprintf("%s_auth=%s\nalways-auth=true\n", npmrcDefaults, auth)
+
 	if npmrc != testNpmrc {
 		t.Errorf("%s != %s", npmrc, testNpmrc)
 	}
@@ -291,7 +312,7 @@ func TestPlugin_createNpmrc_All(t *testing.T) {
 	}
 	p, mock, fs := createTestPlugin(t, c)
 	home := path.Join("usr", "mctestface")
-	fs.MkdirAll(home, 0755)
+	fs.MkdirAll(home, 0755) // nolint: errcheck // testing
 	mock.
 		EXPECT().
 		GetHomeDir().
@@ -306,13 +327,15 @@ func TestPlugin_createNpmrc_All(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	npmrc := string(f)
-	auth := b64.StdEncoding.EncodeToString([]byte(fmt.Sprint("testuser:testpass")))
+	auth := b64.StdEncoding.EncodeToString([]byte("testuser:testpass"))
 	testNpmrc := fmt.Sprintf("%s_auth=%s\nregistry=%s\nemail=%s\nstrict-ssl=true\nalways-auth=true\n",
 		npmrcDefaults,
 		auth,
 		c.Registry,
 		c.Email)
+
 	if npmrc != testNpmrc {
 		t.Errorf("%s != %s", npmrc, testNpmrc)
 	}
