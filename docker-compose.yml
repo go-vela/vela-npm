@@ -1,0 +1,31 @@
+version: '3.2'
+
+services:
+  npm:
+    image: verdaccio/verdaccio:5
+    ports:
+      - "4873:4873"
+
+  plugin:
+    image: vela-npm:local
+    depends_on:
+      - "npm"
+    build: ./build/
+    env_file: .env-docker
+    working_dir: /workspace
+    volumes:
+      - "./examples/:/workspace"
+    environment:
+      - NPM_USERNAME=testuser
+      - NPM_EMAIL=test@test.com
+      - NPM_PASSWORD=testpass
+      - PARAMETER_REGISTRY=http://npm:4873
+      - PARAMETER_SKIP_PING=false
+      - PARAMETER_STRICT_SSL=true
+      - PARAMETER_ALWAYS_AUTH=false
+      - PARAMETER_DRY_RUN=false
+      - PARAMETER_LOG_LEVEL=trace
+      - PARAMETER_TAG=beta
+      - PARAMETER_AUDIT_LEVEL=critical
+      - PARAMETER_ACCESS=public
+      - PARAMETER_WORKSPACES=true

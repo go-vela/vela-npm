@@ -1,0 +1,17 @@
+{
+  "name": "@vela-npm/1",
+  "version": "1.0.0",
+  "description": "Example NodeJS application for testing the vela-npm plugin",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Engineering Coaches <ryse@target.com>",
+  "license": "ISC",
+  "dependencies": {
+    "is-number": "^7.0.0"
+  }
+}

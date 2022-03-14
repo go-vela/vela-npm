@@ -1,0 +1,8 @@
+{
+  "name": "@vela-npm/workspace",
+  "version": "1.0.0",
+  "workspaces": [
+    "example-1",
+    "example-2"
+  ]
+}
