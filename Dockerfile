@@ -6,7 +6,7 @@
 ##    docker build --no-cache -t vela-npm:local .    ##
 ###########################################################################
 
-FROM node@sha256:0e071f3c5c84cffa6b1035023e1956cf28d48f4b36e229cef328772da81ec0c5
+FROM node@sha256:82f9e078898dce32c7bf3232049715f1b8fbf0d62d5f3091bca20fcaede50bf0
 
 COPY release/vela-npm /bin/vela-npm
 
