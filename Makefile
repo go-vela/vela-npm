@@ -88,7 +88,7 @@ fix:
 reset:
 	@echo
 	@echo "### Resetting local env"
-	@rm .env .env-docker
+	@rm -f .env .env-docker
 	@touch .env-docker .env
 	@docker compose down
 
@@ -233,7 +233,7 @@ docker-build:
 #
 # Usage: `make docker-run`
 VERDACCIO_TOKEN := $(shell cat .env)
-PROJECT_PATH ?= $(shell pwd)/examples
+PROJECT_PATH ?= $(shell pwd)/examples/example-0
 .PHONY: docker-run
 docker-run:
 	@echo
@@ -253,7 +253,7 @@ docker-run:
 		-e PARAMETER_TAG \
 		-e PARAMETER_ACCESS=public \
 		-e PARAMETER_WORKSPACES= \
-		-e PARAMETER_WORKSPACE=example-1 \
+		-e PARAMETER_WORKSPACE= \
 		-v $(PROJECT_PATH):/workspace \
 		-w /workspace \
 		--network host \
@@ -265,7 +265,7 @@ docker-run:
 #
 # Usage: `make test-e2e`
 .PHONY: test-e2e
-test-e2e: clean prepare-examples user docker-example
+test-e2e: clean prepare-examples user docker-run
 
 # The `docker-example` target is intended to execute
 # an end-to-end test with Verdaccio
