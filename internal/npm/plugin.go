@@ -213,6 +213,20 @@ func (p *plugin) verifyPackage(prefix string) (packageJSON, error) {
 
 // createNpmrc creates .npmrc file to be used by npm commands.
 func (p *plugin) createNpmrc() error {
+	// check for an .npmrc file in the root, if it exists, delete it as it could interfere with our configuration
+	log.Trace("Checking for local .npmrc")
+	exists, err := p.os.Exists(".npmrc")
+	if err != nil {
+		return fmt.Errorf("failed when looking for local .npmrc: %w", err)
+	}
+	if exists {
+		log.Trace("Removing local .npmrc")
+		err := p.os.Fs.Remove(".npmrc")
+		if err != nil {
+			return fmt.Errorf("failed to create delete local .npmrc: %w", err)
+		}
+	}
+
 	// create file to write to, written in multiple steps
 	log.Trace("Creating .npmrc...")
 
@@ -347,6 +361,9 @@ func (p *plugin) createNpmrc() error {
 			"always-auth": strconv.FormatBool(p.config.AlwaysAuth),
 		}).Debug("AlwaysAuth successfully written")
 	}
+
+	// Trace will output this command's output. Useful for debugging.
+	p.cli.RunCommand("npm", "config", "list")
 
 	log.Trace("... .npmrc successfully written")
 
