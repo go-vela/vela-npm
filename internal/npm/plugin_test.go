@@ -114,6 +114,7 @@ func TestPlugin_createNpmrc_CreatesFile(t *testing.T) {
 		EXPECT().
 		GetHomeDir().
 		Return(home, nil)
+	mock.EXPECT().RunCommand("npm", "config", "list")
 
 	err := p.createNpmrc()
 	if err != nil {
@@ -146,6 +147,7 @@ func TestPlugin_createNpmrc_AuthToken(t *testing.T) {
 		EXPECT().
 		GetHomeDir().
 		Return(home, nil)
+	mock.EXPECT().RunCommand("npm", "config", "list")
 
 	err := p.createNpmrc()
 	if err != nil {
@@ -178,6 +180,7 @@ func TestPlugin_createNpmrc_Registry(t *testing.T) {
 		EXPECT().
 		GetHomeDir().
 		Return(home, nil)
+	mock.EXPECT().RunCommand("npm", "config", "list")
 
 	err := p.createNpmrc()
 	if err != nil {
@@ -211,6 +214,7 @@ func TestPlugin_createNpmrc_Email(t *testing.T) {
 		EXPECT().
 		GetHomeDir().
 		Return(home, nil)
+	mock.EXPECT().RunCommand("npm", "config", "list")
 
 	err := p.createNpmrc()
 	if err != nil {
@@ -245,6 +249,7 @@ func TestPlugin_createNpmrc_StrictSSLSet(t *testing.T) {
 		EXPECT().
 		GetHomeDir().
 		Return(home, nil)
+	mock.EXPECT().RunCommand("npm", "config", "list")
 
 	err := p.createNpmrc()
 	if err != nil {
@@ -279,6 +284,7 @@ func TestPlugin_createNpmrc_AlwaysAuthSet(t *testing.T) {
 		EXPECT().
 		GetHomeDir().
 		Return(home, nil)
+	mock.EXPECT().RunCommand("npm", "config", "list")
 
 	err := p.createNpmrc()
 	if err != nil {
@@ -317,6 +323,7 @@ func TestPlugin_createNpmrc_All(t *testing.T) {
 		EXPECT().
 		GetHomeDir().
 		Return(home, nil)
+	mock.EXPECT().RunCommand("npm", "config", "list")
 
 	err := p.createNpmrc()
 	if err != nil {
