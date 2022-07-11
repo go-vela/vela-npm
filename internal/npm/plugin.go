@@ -73,12 +73,15 @@ func (p *plugin) Validate() error {
 func (p *plugin) Exec() error {
 	// check for an .npmrc file in the root, if it exists, rename it as it could interfere with our configuration
 	log.Trace("Checking for local .npmrc")
+
 	exists, osErr := p.os.Exists(".npmrc")
 	if osErr != nil {
 		return fmt.Errorf("failed when looking for local .npmrc: %w", osErr)
 	}
+
 	if exists {
 		log.Trace("Renaming local .npmrc")
+
 		osErr := p.os.Fs.Rename(".npmrc", ".tmp-npmrc")
 		if osErr != nil {
 			return fmt.Errorf("failed to create rename local .npmrc: %w", osErr)
@@ -90,6 +93,7 @@ func (p *plugin) Exec() error {
 	// restore .npmrc
 	if exists {
 		log.Trace("Restoring local .npmrc")
+
 		osErr := p.os.Fs.Rename(".tmp-npmrc", ".npmrc")
 		if osErr != nil {
 			return fmt.Errorf("failed to restore rename local .npmrc: %w", osErr)
@@ -99,6 +103,7 @@ func (p *plugin) Exec() error {
 	if pluginErr != nil {
 		return pluginErr
 	}
+
 	return nil
 }
 
