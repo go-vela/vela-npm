@@ -386,7 +386,10 @@ func (p *plugin) createNpmrc() error {
 	}
 
 	// Trace will output this command's output. Useful for debugging.
-	p.cli.RunCommand("npm", "config", "list")
+	_, err = p.cli.RunCommand("npm", "config", "list")
+	if err != nil {
+		return fmt.Errorf("npm config list command failed: %w", err)
+	}
 
 	log.Trace("... .npmrc successfully written")
 
