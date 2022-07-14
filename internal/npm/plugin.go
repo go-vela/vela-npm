@@ -281,7 +281,9 @@ func (p *plugin) createNpmrc() error {
 		if !strings.HasSuffix(registryString, "/") {
 			registryString = registryString + "/"
 		}
+
 		registryString = registryString + ":"
+
 		log.WithFields(log.Fields{
 			"registry": registryString,
 		}).Trace("auth prefix registry string")
