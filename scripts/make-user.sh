@@ -7,5 +7,5 @@ VERDACCIO_TOKEN=$(curl -s \
   http://localhost:4873/-/user/org.couchdb.user:testuser | jq '.token')
 
 echo "NPM_TOKEN=$VERDACCIO_TOKEN" > .env-docker
-echo "CI=vela" >> .env-docker
+echo "CI=true" >> .env-docker
 echo $VERDACCIO_TOKEN | jq -r > .env

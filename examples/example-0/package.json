@@ -11,6 +11,9 @@
   },
   "author": "Engineering Coaches <ryse@target.com>",
   "license": "ISC",
+  "publishConfig": {
+    "registry": "http://localhost:4873"
+  },
   "dependencies": {
     "is-number": "^7.0.0"
   }

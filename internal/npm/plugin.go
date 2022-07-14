@@ -71,43 +71,6 @@ func (p *plugin) Validate() error {
 
 // Exec runs the plugin.
 func (p *plugin) Exec() error {
-	// check for an .npmrc file in the root, if it exists, rename it as it could interfere with our configuration
-	log.Trace("Checking for local .npmrc")
-
-	exists, osErr := p.os.Exists(".npmrc")
-	if osErr != nil {
-		return fmt.Errorf("failed when looking for local .npmrc: %w", osErr)
-	}
-
-	if exists {
-		log.Trace("Renaming local .npmrc")
-
-		osErr := p.os.Fs.Rename(".npmrc", ".tmp-npmrc")
-		if osErr != nil {
-			return fmt.Errorf("failed to create rename local .npmrc: %w", osErr)
-		}
-	}
-
-	pluginErr := p.runSteps()
-
-	// restore .npmrc
-	if exists {
-		log.Trace("Restoring local .npmrc")
-
-		osErr := p.os.Fs.Rename(".tmp-npmrc", ".npmrc")
-		if osErr != nil {
-			return fmt.Errorf("failed to restore rename local .npmrc: %w", osErr)
-		}
-	}
-
-	if pluginErr != nil {
-		return pluginErr
-	}
-
-	return nil
-}
-
-func (p *plugin) runSteps() error {
 	// run through plugin steps
 	if err := p.createNpmrc(); err != nil {
 		return err
@@ -307,21 +270,20 @@ func (p *plugin) createNpmrc() error {
 
 	log.Debug("update-notifier successfully written")
 
+	registry, _ := url.Parse(p.config.Registry)
+	registry.Scheme = "" // Reset the scheme to empty. This makes it so we will get a protocol relative URL.
+	registryString := registry.String()
+
+	if !strings.HasSuffix(registryString, "/") {
+		registryString = registryString + "/"
+	}
+	log.WithFields(log.Fields{
+		"registry": registryString,
+	}).Trace("auth prefix registry string")
+
 	// write auth config
 	if len(p.config.Token) != 0 {
 		// use token
-		registry, _ := url.Parse(p.config.Registry)
-		registry.Scheme = "" // Reset the scheme to empty. This makes it so we will get a protocol relative URL.
-		registryString := registry.String()
-
-		if !strings.HasSuffix(registryString, "/") {
-			registryString = registryString + "/"
-		}
-
-		log.WithFields(log.Fields{
-			"registry": registryString,
-		}).Trace("_authToken registry string")
-
 		auth := fmt.Sprintf("%s:_authToken=\"%s\"", registryString, p.config.Token)
 
 		if _, err = f.WriteString(auth + "\n"); err != nil {
@@ -331,8 +293,9 @@ func (p *plugin) createNpmrc() error {
 		log.Debug("_authToken successfully written")
 	} else {
 		// user username/password
-		auth := b64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", p.config.UserName, p.config.Password)))
-		if _, err = f.WriteString("_auth=" + auth + "\n"); err != nil {
+		auth64 := b64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", p.config.UserName, p.config.Password)))
+		auth := fmt.Sprintf("%s:_auth=\"%s\"", registryString, auth64)
+		if _, err = f.WriteString(auth + "\n"); err != nil {
 			return fmt.Errorf("failed to write _auth: %w", err)
 		}
 
@@ -401,7 +364,7 @@ func (p *plugin) authenticate() error {
 	log.Info("Checking connection and authentication")
 	// make sure auth config was written successfully
 	// https://docs.npmjs.com/cli/whoami.html
-	_, err := p.cli.RunCommandString("npm", "whoami")
+	_, err := p.cli.RunCommandString("npm", "whoami", "--registry", p.config.Registry)
 
 	if err != nil {
 		return fmt.Errorf("npm authentication failed")
@@ -415,7 +378,7 @@ func (p *plugin) authenticate() error {
 	} else {
 		log.Debug("Attempting ping")
 
-		_, err = p.cli.RunCommand("npm", "ping")
+		_, err = p.cli.RunCommand("npm", "ping", "--registry", p.config.Registry)
 		if err != nil {
 			return errors.New("ping failed, authentication unsuccessful")
 		}
@@ -437,7 +400,7 @@ func (p *plugin) validatePackageVersion(nodePackage packageJSON) error {
 		"version": nodePackage.Version,
 	}).Info("Checking registry for the current version")
 
-	out, cmdErr := p.cli.RunCommandBytes("npm", "view", nodePackage.Name, "versions")
+	out, cmdErr := p.cli.RunCommandBytes("npm", "view", nodePackage.Name, "versions", "--registry", p.config.Registry)
 	// There was an error getting versions but doesn't mean we can't run
 	if cmdErr != nil {
 		log.Trace(fmt.Errorf("versions command failed: %w", cmdErr))
@@ -556,6 +519,8 @@ func (p *plugin) publish() error {
 
 		args = append(args, "--workspace", p.config.Workspace)
 	}
+
+	args = append(args, "--registry", p.config.Registry)
 
 	out, err := p.cli.RunCommandBytes("npm", args...)
 
