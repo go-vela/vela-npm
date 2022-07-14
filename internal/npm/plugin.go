@@ -274,9 +274,10 @@ func (p *plugin) createNpmrc() error {
 	if err != nil {
 		return fmt.Errorf("failed to parse registry URL: %w", err)
 	}
-	registry.Scheme = "" // Reset the scheme to empty. This makes it so we will get a protocol relative URL.
-	registryString := registry.String()
 
+	registry.Scheme = "" // Reset the scheme to empty. This makes it so we will get a protocol relative URL.
+
+	registryString := registry.String()
 	if len(registryString) > 0 {
 		if !strings.HasSuffix(registryString, "/") {
 			registryString = registryString + "/"
