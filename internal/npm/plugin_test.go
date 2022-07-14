@@ -19,6 +19,7 @@ import (
 )
 
 const npmrcDefaults = "json=true\ncolor=false\nloglevel=silent\nupdate-notifier=false\n"
+const auth = "dGVzdHVzZXI6dGVzdHBhc3M="
 
 func createTestPlugin(t *testing.T, c *Config) (*plugin, *test.MockOSContext, afero.Fs) {
 	ctrl := gomock.NewController(t)
@@ -104,6 +105,7 @@ func TestPlugin_verifyPackage_Invalid(t *testing.T) {
 
 func TestPlugin_createNpmrc_CreatesFile(t *testing.T) {
 	c := &Config{
+		Registry: "http://registry.test.com",
 		UserName: "testuser",
 		Password: "testpass",
 	}
@@ -127,8 +129,7 @@ func TestPlugin_createNpmrc_CreatesFile(t *testing.T) {
 	}
 
 	npmrc := string(f)
-	auth := b64.StdEncoding.EncodeToString([]byte("testuser:testpass"))
-	testNpmrc := fmt.Sprintf("%s_auth=%s\n", npmrcDefaults, auth)
+	testNpmrc := fmt.Sprintf("%s//registry.test.com/:_auth=%s\nregistry=http://registry.test.com\n", npmrcDefaults, auth)
 
 	if npmrc != testNpmrc {
 		t.Errorf("%s != %s", npmrc, testNpmrc)
@@ -193,8 +194,7 @@ func TestPlugin_createNpmrc_Registry(t *testing.T) {
 	}
 
 	npmrc := string(f)
-	auth := b64.StdEncoding.EncodeToString([]byte("testuser:testpass"))
-	testNpmrc := fmt.Sprintf("%s_auth=%s\nregistry=%s\n", npmrcDefaults, auth, c.Registry)
+	testNpmrc := fmt.Sprintf("%s//registry.test.com/:_auth=%s\nregistry=%s\n", npmrcDefaults, auth, c.Registry)
 
 	if npmrc != testNpmrc {
 		t.Errorf("%s != %s", npmrc, testNpmrc)
@@ -206,6 +206,7 @@ func TestPlugin_createNpmrc_Email(t *testing.T) {
 		UserName: "testuser",
 		Password: "testpass",
 		Email:    "testuser@test.com",
+		Registry: "http://registry.test.com",
 	}
 	p, mock, fs := createTestPlugin(t, c)
 	home := path.Join("usr", "mctestface")
@@ -228,7 +229,7 @@ func TestPlugin_createNpmrc_Email(t *testing.T) {
 
 	npmrc := string(f)
 	auth := b64.StdEncoding.EncodeToString([]byte("testuser:testpass"))
-	testNpmrc := fmt.Sprintf("%s_auth=%s\nemail=%s\n", npmrcDefaults, auth, c.Email)
+	testNpmrc := fmt.Sprintf("%s//registry.test.com/:_auth=%s\nregistry=http://registry.test.com\nemail=%s\n", npmrcDefaults, auth, c.Email)
 
 	if npmrc != testNpmrc {
 		t.Errorf("%s != %s", npmrc, testNpmrc)
@@ -337,7 +338,7 @@ func TestPlugin_createNpmrc_All(t *testing.T) {
 
 	npmrc := string(f)
 	auth := b64.StdEncoding.EncodeToString([]byte("testuser:testpass"))
-	testNpmrc := fmt.Sprintf("%s_auth=%s\nregistry=%s\nemail=%s\nstrict-ssl=true\nalways-auth=true\n",
+	testNpmrc := fmt.Sprintf("%s//registry.test.com/:_auth=%s\nregistry=%s\nemail=%s\nstrict-ssl=true\nalways-auth=true\n",
 		npmrcDefaults,
 		auth,
 		c.Registry,
@@ -349,15 +350,17 @@ func TestPlugin_createNpmrc_All(t *testing.T) {
 }
 
 func TestPlugin_authenticate(t *testing.T) {
-	p, mock, _ := createTestPlugin(t, &Config{})
+	p, mock, _ := createTestPlugin(t, &Config{
+		Registry: "http://registry.test.com",
+	})
 	mock.
 		EXPECT().
-		RunCommandString(gomock.Eq("npm"), gomock.Eq([]string{"whoami"})).
+		RunCommandString(gomock.Eq("npm"), gomock.Eq([]string{"whoami", "--registry", "http://registry.test.com"})).
 		Times(1).
 		Return("testuser", nil)
 	mock.
 		EXPECT().
-		RunCommand(gomock.Eq("npm"), gomock.Eq([]string{"ping"})).
+		RunCommand(gomock.Eq("npm"), gomock.Eq([]string{"ping", "--registry", "http://registry.test.com"})).
 		Times(1).
 		Return(bytes.Buffer{}, nil)
 
@@ -370,16 +373,17 @@ func TestPlugin_authenticate(t *testing.T) {
 func TestPlugin_authenticate_SkipPing(t *testing.T) {
 	c := &Config{
 		SkipPing: true,
+		Registry: "http://registry.test.com",
 	}
 	p, mock, _ := createTestPlugin(t, c)
 	mock.
 		EXPECT().
-		RunCommandString(gomock.Eq("npm"), gomock.Eq([]string{"whoami"})).
+		RunCommandString(gomock.Eq("npm"), gomock.Eq([]string{"whoami", "--registry", "http://registry.test.com"})).
 		Times(1).
 		Return("testuser", nil)
 	mock.
 		EXPECT().
-		RunCommand(gomock.Eq("npm"), gomock.Eq([]string{"ping"})).
+		RunCommand(gomock.Eq("npm"), gomock.Eq([]string{"ping", "--registry", "http://registry.test.com"})).
 		Times(0).
 		Return(bytes.Buffer{}, nil)
 
@@ -390,7 +394,9 @@ func TestPlugin_authenticate_SkipPing(t *testing.T) {
 }
 
 func TestPlugin_validatePackageVersion(t *testing.T) {
-	p, mock, _ := createTestPlugin(t, &Config{})
+	p, mock, _ := createTestPlugin(t, &Config{
+		Registry: "http://registry.test.com",
+	})
 	testPackage := packageJSON{
 		Name:    "vela-npm",
 		Version: "2.0.0",
@@ -398,7 +404,7 @@ func TestPlugin_validatePackageVersion(t *testing.T) {
 	res := `["1.0.0"]`
 	mock.
 		EXPECT().
-		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"view", "vela-npm", "versions"})).
+		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"view", "vela-npm", "versions", "--registry", "http://registry.test.com"})).
 		Return([]byte(res), nil)
 
 	err := p.validatePackageVersion(testPackage)
@@ -408,7 +414,9 @@ func TestPlugin_validatePackageVersion(t *testing.T) {
 }
 
 func TestPlugin_validatePackageVersion_RegistryNotFound(t *testing.T) {
-	p, mock, _ := createTestPlugin(t, &Config{})
+	p, mock, _ := createTestPlugin(t, &Config{
+		Registry: "http://registry.test.com",
+	})
 	testPackage := packageJSON{
 		Name:    "vela-npm",
 		Version: "2.0.0",
@@ -422,7 +430,7 @@ func TestPlugin_validatePackageVersion_RegistryNotFound(t *testing.T) {
 	}`
 	mock.
 		EXPECT().
-		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"view", "vela-npm", "versions"})).
+		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"view", "vela-npm", "versions", "--registry", "http://registry.test.com"})).
 		Return([]byte(res), errors.New("Process exited with status code 1"))
 
 	err := p.validatePackageVersion(testPackage)
@@ -432,7 +440,9 @@ func TestPlugin_validatePackageVersion_RegistryNotFound(t *testing.T) {
 }
 
 func TestPlugin_validatePackageVersion_PackageNotFound(t *testing.T) {
-	p, mock, _ := createTestPlugin(t, &Config{})
+	p, mock, _ := createTestPlugin(t, &Config{
+		Registry: "http://registry.test.com",
+	})
 	testPackage := packageJSON{
 		Name:    "vela-npm",
 		Version: "2.0.0",
@@ -446,7 +456,7 @@ func TestPlugin_validatePackageVersion_PackageNotFound(t *testing.T) {
 	}`
 	mock.
 		EXPECT().
-		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"view", "vela-npm", "versions"})).
+		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"view", "vela-npm", "versions", "--registry", "http://registry.test.com"})).
 		Return([]byte(res), errors.New("Process exited with status code 1"))
 
 	err := p.validatePackageVersion(testPackage)
@@ -456,7 +466,9 @@ func TestPlugin_validatePackageVersion_PackageNotFound(t *testing.T) {
 }
 
 func TestPlugin_validatePackageVersion_Conflict(t *testing.T) {
-	p, mock, _ := createTestPlugin(t, &Config{})
+	p, mock, _ := createTestPlugin(t, &Config{
+		Registry: "http://registry.test.com",
+	})
 	testPackage := packageJSON{
 		Name:    "vela-npm",
 		Version: "1.0.0",
@@ -464,7 +476,7 @@ func TestPlugin_validatePackageVersion_Conflict(t *testing.T) {
 	res := `["1.0.0"]`
 	mock.
 		EXPECT().
-		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"view", "vela-npm", "versions"})).
+		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"view", "vela-npm", "versions", "--registry", "http://registry.test.com"})).
 		Return([]byte(res), nil)
 
 	err := p.validatePackageVersion(testPackage)
@@ -599,7 +611,9 @@ func TestPlugin_audit_CriticalTriggerHigh(t *testing.T) {
 }
 
 func TestPlugin_Publish(t *testing.T) {
-	p, mock, _ := createTestPlugin(t, &Config{})
+	p, mock, _ := createTestPlugin(t, &Config{
+		Registry: "http://registry.test.com",
+	})
 	res := ` {
 		"name": "@go-vela/vela-npm",
 		"version": "1.0.0",
@@ -624,7 +638,7 @@ func TestPlugin_Publish(t *testing.T) {
 
 	mock.
 		EXPECT().
-		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"publish", "--quiet"})).
+		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"publish", "--quiet", "--registry", "http://registry.test.com"})).
 		Return([]byte(res), nil)
 
 	err := p.publish()
@@ -635,7 +649,8 @@ func TestPlugin_Publish(t *testing.T) {
 
 func TestPlugin_Publish_Access(t *testing.T) {
 	p, mock, _ := createTestPlugin(t, &Config{
-		Access: "public",
+		Access:   "public",
+		Registry: "http://registry.test.com",
 	})
 
 	res := ` {
@@ -662,7 +677,7 @@ func TestPlugin_Publish_Access(t *testing.T) {
 
 	mock.
 		EXPECT().
-		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"publish", "--quiet", "--access", "public"})).
+		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"publish", "--quiet", "--access", "public", "--registry", "http://registry.test.com"})).
 		Return([]byte(res), nil)
 
 	err := p.publish()
@@ -673,7 +688,8 @@ func TestPlugin_Publish_Access(t *testing.T) {
 
 func TestPlugin_Publish_DryRun(t *testing.T) {
 	c := &Config{
-		DryRun: true,
+		DryRun:   true,
+		Registry: "http://registry.test.com",
 	}
 	p, mock, _ := createTestPlugin(t, c)
 	res := ` {
@@ -700,7 +716,7 @@ func TestPlugin_Publish_DryRun(t *testing.T) {
 
 	mock.
 		EXPECT().
-		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"publish", "--quiet", "--dry-run"})).
+		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"publish", "--quiet", "--dry-run", "--registry", "http://registry.test.com"})).
 		Return([]byte(res), nil)
 
 	err := p.publish()
@@ -711,7 +727,8 @@ func TestPlugin_Publish_DryRun(t *testing.T) {
 
 func TestPlugin_Publish_Tag(t *testing.T) {
 	c := &Config{
-		Tag: "beta",
+		Tag:      "beta",
+		Registry: "http://registry.test.com",
 	}
 	p, mock, _ := createTestPlugin(t, c)
 	res := ` {
@@ -738,7 +755,7 @@ func TestPlugin_Publish_Tag(t *testing.T) {
 
 	mock.
 		EXPECT().
-		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"publish", "--quiet", "--tag", "beta"})).
+		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"publish", "--quiet", "--tag", "beta", "--registry", "http://registry.test.com"})).
 		Return([]byte(res), nil)
 
 	err := p.publish()
@@ -750,6 +767,7 @@ func TestPlugin_Publish_Tag(t *testing.T) {
 func TestPlugin_Publish_Workspaces(t *testing.T) {
 	c := &Config{
 		Workspaces: true,
+		Registry:   "http://registry.test.com",
 	}
 	p, mock, _ := createTestPlugin(t, c)
 	res := `{
@@ -801,7 +819,7 @@ func TestPlugin_Publish_Workspaces(t *testing.T) {
 
 	mock.
 		EXPECT().
-		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"publish", "--quiet", "--workspaces"})).
+		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"publish", "--quiet", "--workspaces", "--registry", "http://registry.test.com"})).
 		Return([]byte(res), nil)
 
 	err := p.publish()
@@ -813,6 +831,7 @@ func TestPlugin_Publish_Workspaces(t *testing.T) {
 func TestPlugin_Publish_Workspace(t *testing.T) {
 	c := &Config{
 		Workspace: "example",
+		Registry:  "http://registry.test.com",
 	}
 	p, mock, _ := createTestPlugin(t, c)
 	res := `{
@@ -842,7 +861,7 @@ func TestPlugin_Publish_Workspace(t *testing.T) {
 
 	mock.
 		EXPECT().
-		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"publish", "--quiet", "--workspace", "example"})).
+		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"publish", "--quiet", "--workspace", "example", "--registry", "http://registry.test.com"})).
 		Return([]byte(res), nil)
 
 	err := p.publish()
@@ -856,6 +875,7 @@ func TestPlugin_Publish_All(t *testing.T) {
 		DryRun:     true,
 		Tag:        "beta",
 		Workspaces: true,
+		Registry:   "http://registry.test.com",
 	}
 	p, mock, _ := createTestPlugin(t, c)
 	res := `{
@@ -907,7 +927,7 @@ func TestPlugin_Publish_All(t *testing.T) {
 
 	mock.
 		EXPECT().
-		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"publish", "--quiet", "--dry-run", "--tag", "beta", "--workspaces"})).
+		RunCommandBytes(gomock.Eq("npm"), gomock.Eq([]string{"publish", "--quiet", "--dry-run", "--tag", "beta", "--workspaces", "--registry", "http://registry.test.com"})).
 		Return([]byte(res), nil)
 
 	err := p.publish()

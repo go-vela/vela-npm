@@ -270,21 +270,27 @@ func (p *plugin) createNpmrc() error {
 
 	log.Debug("update-notifier successfully written")
 
-	registry, _ := url.Parse(p.config.Registry)
+	registry, err := url.Parse(p.config.Registry)
+	if err != nil {
+		return fmt.Errorf("failed to parse registry URL: %w", err)
+	}
 	registry.Scheme = "" // Reset the scheme to empty. This makes it so we will get a protocol relative URL.
 	registryString := registry.String()
 
-	if !strings.HasSuffix(registryString, "/") {
-		registryString = registryString + "/"
+	if len(registryString) > 0 {
+		if !strings.HasSuffix(registryString, "/") {
+			registryString = registryString + "/"
+		}
+		registryString = registryString + ":"
+		log.WithFields(log.Fields{
+			"registry": registryString,
+		}).Trace("auth prefix registry string")
 	}
-	log.WithFields(log.Fields{
-		"registry": registryString,
-	}).Trace("auth prefix registry string")
 
 	// write auth config
 	if len(p.config.Token) != 0 {
 		// use token
-		auth := fmt.Sprintf("%s:_authToken=\"%s\"", registryString, p.config.Token)
+		auth := fmt.Sprintf("%s_authToken=\"%s\"", registryString, p.config.Token)
 
 		if _, err = f.WriteString(auth + "\n"); err != nil {
 			return fmt.Errorf("failed to write _authToken: %w", err)
@@ -294,7 +300,7 @@ func (p *plugin) createNpmrc() error {
 	} else {
 		// user username/password
 		auth64 := b64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", p.config.UserName, p.config.Password)))
-		auth := fmt.Sprintf("%s:_auth=\"%s\"", registryString, auth64)
+		auth := fmt.Sprintf("%s_auth=%s", registryString, auth64)
 		if _, err = f.WriteString(auth + "\n"); err != nil {
 			return fmt.Errorf("failed to write _auth: %w", err)
 		}
