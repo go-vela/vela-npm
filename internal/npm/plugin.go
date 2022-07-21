@@ -270,22 +270,30 @@ func (p *plugin) createNpmrc() error {
 
 	log.Debug("update-notifier successfully written")
 
-	// write auth config
-	if len(p.config.Token) != 0 {
-		// use token
-		registry, _ := url.Parse(p.config.Registry)
-		registry.Scheme = "" // Reset the scheme to empty. This makes it so we will get a protocol relative URL.
-		registryString := registry.String()
+	registry, err := url.Parse(p.config.Registry)
+	if err != nil {
+		return fmt.Errorf("failed to parse registry URL: %w", err)
+	}
 
+	registry.Scheme = "" // Reset the scheme to empty. This makes it so we will get a protocol relative URL.
+
+	registryString := registry.String()
+	if len(registryString) > 0 {
 		if !strings.HasSuffix(registryString, "/") {
 			registryString = registryString + "/"
 		}
 
+		registryString = registryString + ":"
+
 		log.WithFields(log.Fields{
 			"registry": registryString,
-		}).Trace("_authToken registry string")
+		}).Trace("auth prefix registry string")
+	}
 
-		auth := fmt.Sprintf("%s:_authToken=\"%s\"", registryString, p.config.Token)
+	// write auth config
+	if len(p.config.Token) != 0 {
+		// use token
+		auth := fmt.Sprintf("%s_authToken=\"%s\"", registryString, p.config.Token)
 
 		if _, err = f.WriteString(auth + "\n"); err != nil {
 			return fmt.Errorf("failed to write _authToken: %w", err)
@@ -294,8 +302,9 @@ func (p *plugin) createNpmrc() error {
 		log.Debug("_authToken successfully written")
 	} else {
 		// user username/password
-		auth := b64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", p.config.UserName, p.config.Password)))
-		if _, err = f.WriteString("_auth=" + auth + "\n"); err != nil {
+		auth64 := b64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", p.config.UserName, p.config.Password)))
+		auth := fmt.Sprintf("%s_auth=%s", registryString, auth64)
+		if _, err = f.WriteString(auth + "\n"); err != nil {
 			return fmt.Errorf("failed to write _auth: %w", err)
 		}
 
@@ -348,6 +357,12 @@ func (p *plugin) createNpmrc() error {
 		}).Debug("AlwaysAuth successfully written")
 	}
 
+	// Trace will output this command's output. Useful for debugging.
+	_, err = p.cli.RunCommand("npm", "config", "list")
+	if err != nil {
+		return fmt.Errorf("npm config list command failed: %w", err)
+	}
+
 	log.Trace("... .npmrc successfully written")
 
 	return nil
@@ -358,7 +373,7 @@ func (p *plugin) authenticate() error {
 	log.Info("Checking connection and authentication")
 	// make sure auth config was written successfully
 	// https://docs.npmjs.com/cli/whoami.html
-	_, err := p.cli.RunCommandString("npm", "whoami")
+	_, err := p.cli.RunCommandString("npm", "whoami", "--registry", p.config.Registry)
 
 	if err != nil {
 		return fmt.Errorf("npm authentication failed")
@@ -372,7 +387,7 @@ func (p *plugin) authenticate() error {
 	} else {
 		log.Debug("Attempting ping")
 
-		_, err = p.cli.RunCommand("npm", "ping")
+		_, err = p.cli.RunCommand("npm", "ping", "--registry", p.config.Registry)
 		if err != nil {
 			return errors.New("ping failed, authentication unsuccessful")
 		}
@@ -394,7 +409,7 @@ func (p *plugin) validatePackageVersion(nodePackage packageJSON) error {
 		"version": nodePackage.Version,
 	}).Info("Checking registry for the current version")
 
-	out, cmdErr := p.cli.RunCommandBytes("npm", "view", nodePackage.Name, "versions")
+	out, cmdErr := p.cli.RunCommandBytes("npm", "view", nodePackage.Name, "versions", "--registry", p.config.Registry)
 	// There was an error getting versions but doesn't mean we can't run
 	if cmdErr != nil {
 		log.Trace(fmt.Errorf("versions command failed: %w", cmdErr))
@@ -513,6 +528,8 @@ func (p *plugin) publish() error {
 
 		args = append(args, "--workspace", p.config.Workspace)
 	}
+
+	args = append(args, "--registry", p.config.Registry)
 
 	out, err := p.cli.RunCommandBytes("npm", args...)
 
