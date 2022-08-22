@@ -169,19 +169,19 @@ steps:
 
 The following parameters are used to configure the image:
 
-| Name            | Description                                                                                                        | Required | Default                      |
-| --------------- | ------------------------------------------------------------------------------------------------------------------ | -------- | ---------------------------- |
-| `username`      | username for communication with npm                                                                                | `true`   | `N/A`                        |
-| `password`      | password for communication with npm                                                                                | `false`  | `N/A`                        |
-| `email`         | email for communication with npm                                                                                   | `false`  | `N/A`                        |
-| `registry`      | npm instance to communicate with                                                                                   | `false`  | `https://registry.npmjs.org` |
-| `audit_level`   | level at which the audit check should fail (valid options: `low`, `moderate`, `high`, `critical`, `none` to skip)  | `false`  | `low`                        |
-| `strict_ssl`    | whether or not to do SSL key validation during communication                                                       | `false`  | `true`                       |
-| `always_auth`   | force npm to always require authentication                                                                         | `false`  | `false`                      |
-| `skip_ping`     | whether or not to skip `npm ping` authentication command                                                           | `false`  | `false`                      |
-| `dry_run`       | enables pretending to perform the action                                                                           | `false`  | `false`                      |
-| `tag`           | publish package with given alias tag                                                                               | `false`  | `latest`                     |
-| `log_level`     | set the log level for the plugin (valid options: `info`, `debug`, `trace`)                                         | `true`   | `info`                       |
+| Name            | Description                                                                                                        | Required | Default                      | Environment Variables                    |
+| --------------- | ------------------------------------------------------------------------------------------------------------------ | -------- | ---------------------------- | ---------------------------------------- |
+| `username`      | username for communication with npm                                                                                | `true`   | `N/A`                        | `PARAMETER_USERNAME`<br>`NPM_USERNAME`   |
+| `password`      | password for communication with npm                                                                                | `false`  | `N/A`                        | `PARAMETER_PASSWORD`<br>`NPM_PASSWORD`   |
+| `email`         | email for communication with npm                                                                                   | `false`  | `N/A`                        | `PARAMETER_EMAIL`<br>`NPM_EMAIL`         |
+| `registry`      | npm instance to communicate with                                                                                   | `false`  | `https://registry.npmjs.org` | `PARAMETER_REGISTRY`<br>`NPM_REGISTRY`   |
+| `audit_level`   | level at which the audit check should fail (valid options: `low`, `moderate`, `high`, `critical`, `none` to skip)  | `false`  | `low`                        | `PARAMETER_AUDIT_LEVEL`<br>`AUDIT_LEVEL` |
+| `strict_ssl`    | whether or not to do SSL key validation during communication                                                       | `false`  | `true`                       | `PARAMETER_STRICT_SSL`<br>`STRICT_SSL`   |
+| `always_auth`   | force npm to always require authentication                                                                         | `false`  | `false`                      | `PARAMETER_ALWAYS_AUTH`<br>`ALWAYS_AUTH` |
+| `skip_ping`     | whether or not to skip `npm ping` authentication command                                                           | `false`  | `false`                      | `PARAMETER_SKIP_PING`<br>`SKIP_PING`     |
+| `dry_run`       | enables pretending to perform the action                                                                           | `false`  | `false`                      | `PARAMETER_DRY_RUN`<br>`DRY_RUN`         |
+| `tag`           | publish package with given alias tag                                                                               | `false`  | `latest`                     | `PARAMETER_TAG`<br>`TAG`                 |
+| `log_level`     | set the log level for the plugin (valid options: `info`, `debug`, `trace`)                                         | `true`   | `info`                       | `PARAMETER_LOG_LEVEL`<br>`LOG_LEVEL`     |
 
 ## package.json
 This is your module's manifest.  There are a few important keys that need to be set in order to publish your module
