@@ -6,6 +6,7 @@
 ##    docker build --no-cache -t vela-npm:local .    ##
 ###########################################################################
 
+# build from node LTS Gallium https://nodejs.org/en/about/releases/
 FROM node:lts-gallium@sha256:bf1609ac718dda03940e2be4deae1704fb77cd6de2bed8bf91d4bbbc9e88b497
 
 COPY release/vela-npm /bin/vela-npm
