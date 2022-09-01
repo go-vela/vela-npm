@@ -29,9 +29,9 @@ steps:
 
 Sample of publishing if registry does not support `npm ping`:
 
-{{% notice tip %}}
-Recommended if you are deploying to a registry inside ***Artifactory***
-{{% /notice %}}
+> **NOTE:**
+>
+> Recommended if you are deploying to a registry inside ***Artifactory***
 
 ```diff
 steps:
@@ -75,9 +75,9 @@ steps:
 
 Sample of publishing with additional dist-tag:
 
-{{% notice warning %}}
-Tags are used as an alias and cannot be valid semver
-{{% /notice %}}
+> **NOTE:**
+>
+> Tags are used as an alias and cannot be valid semver
 
 ```diff
 steps:
@@ -107,9 +107,9 @@ steps:
 
 ## Secrets
 
-{{% notice warning %}}
-**Users should refrain from configuring sensitive information in their pipeline in plain text.**
-{{% /notice %}}
+> **NOTE:**
+>
+> Users should refrain from configuring sensitive information in their pipeline in plain text.
 
 ### Internal
 
@@ -199,7 +199,5 @@ COMING SOON!
 
 ## Troubleshooting
 
-{{% notice tip %}}
-**Here are the available log levels to assist in troubleshooting:**
+Here are the available log levels to assist in troubleshooting:
 trace, debug, info, warn, error, fatal, panic
-{{% /notice %}}
