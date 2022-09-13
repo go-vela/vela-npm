@@ -7,7 +7,7 @@
 ###########################################################################
 
 # build from node LTS Gallium https://nodejs.org/en/about/releases/
-FROM node:lts-gallium@sha256:d8d3181ca9840f6667ae8694c35511af806e31c45f9c4fa5f80328b0b2c1dc44
+FROM node:lts-gallium@sha256:a5d9200d3b8c17f0f3d7717034a9c215015b7aae70cb2a9d5e5dae7ff8aa6ca8
 
 COPY release/vela-npm /bin/vela-npm
 
