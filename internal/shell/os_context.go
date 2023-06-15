@@ -27,7 +27,7 @@ type NPMErrorResponse struct {
 	ErrorBlock ErrorStruct `json:"error"`
 }
 
-//OSContext interface for running CLI commands.
+// OSContext interface for running CLI commands.
 type OSContext interface {
 	RunCommand(name string, args ...string) (bytes.Buffer, error)
 	RunCommandBytes(name string, args ...string) ([]byte, error)
