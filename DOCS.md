@@ -174,6 +174,7 @@ The following parameters are used to configure the image:
 | `username`      | username for communication with npm                                                                                | `true`   | `N/A`                        | `PARAMETER_USERNAME`<br>`NPM_USERNAME`   |
 | `password`      | password for communication with npm                                                                                | `false`  | `N/A`                        | `PARAMETER_PASSWORD`<br>`NPM_PASSWORD`   |
 | `email`         | email for communication with npm                                                                                   | `false`  | `N/A`                        | `PARAMETER_EMAIL`<br>`NPM_EMAIL`         |
+| `token`         | auth token for communication with npm                                                                              | `false`  | `N/A`                        | `PARAMETER_TOKEN`<br>`TOKEN`             |
 | `registry`      | npm instance to communicate with                                                                                   | `false`  | `https://registry.npmjs.org` | `PARAMETER_REGISTRY`<br>`NPM_REGISTRY`   |
 | `audit_level`   | level at which the audit check should fail (valid options: `low`, `moderate`, `high`, `critical`, `none` to skip)  | `false`  | `low`                        | `PARAMETER_AUDIT_LEVEL`<br>`AUDIT_LEVEL` |
 | `strict_ssl`    | whether or not to do SSL key validation during communication                                                       | `false`  | `true`                       | `PARAMETER_STRICT_SSL`<br>`STRICT_SSL`   |
@@ -182,6 +183,9 @@ The following parameters are used to configure the image:
 | `dry_run`       | enables pretending to perform the action                                                                           | `false`  | `false`                      | `PARAMETER_DRY_RUN`<br>`DRY_RUN`         |
 | `tag`           | publish package with given alias tag                                                                               | `false`  | `latest`                     | `PARAMETER_TAG`<br>`TAG`                 |
 | `log_level`     | set the log level for the plugin (valid options: `info`, `debug`, `trace`)                                         | `true`   | `info`                       | `PARAMETER_LOG_LEVEL`<br>`LOG_LEVEL`     |
+| `workspaces`    | publish all workspaces                                                                                             | `false`  | `false`                      | `PARAMETER_WORKSPACES`<br>`WORKSPACES`   |
+| `workspace`     | publish a specific workspace by specifying the workspace name or relative path                                     | `false`  | `N/A`                        | `PARAMETER_WORKSPACE`<br>`WORKSPACE`     |
+| `access`        | Tells the registry whether this package should be published as public or restricted. Only applies to scoped packages, which default to restricted  | `false` | `restricted` | `PARAMETER_ACCESS`<br>`ACCESS`   |
 
 ## package.json
 This is your module's manifest.  There are a few important keys that need to be set in order to publish your module
