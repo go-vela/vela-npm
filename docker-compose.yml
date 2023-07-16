@@ -2,7 +2,7 @@ version: '3.2'
 
 services:
   npm:
-    image: verdaccio/verdaccio:5
+    image: verdaccio/verdaccio:5@sha256:a71fc030a343ce3551aed2731a6b7dcce2df4ab28b786b1685d3d8d02585cdab
     ports:
       - "4873:4873"
 
