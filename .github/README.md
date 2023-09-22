@@ -28,5 +28,5 @@ Please see our [support](SUPPORT.md) documentation for further instructions.
 ## Copyright and License
 
 ```
-Copyright (c) 2022 Target Brands, Inc.
+Copyright 2022 Target Brands, Inc.
 ```
