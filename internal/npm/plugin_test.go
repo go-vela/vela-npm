@@ -109,7 +109,7 @@ func TestPlugin_createNpmrc_CreatesFile(t *testing.T) {
 	}
 	p, mock, fs := createTestPlugin(t, c)
 	home := path.Join("usr", "mctestface")
-	fs.MkdirAll(home, 0755) // nolint: errcheck // testing
+	fs.MkdirAll(home, 0755) //nolint:errcheck // testing
 	mock.
 		EXPECT().
 		GetHomeDir().
@@ -141,7 +141,7 @@ func TestPlugin_createNpmrc_AuthToken(t *testing.T) {
 	}
 	p, mock, fs := createTestPlugin(t, c)
 	home := path.Join("usr", "mctestface")
-	fs.MkdirAll(home, 0755) // nolint: errcheck // testing
+	fs.MkdirAll(home, 0755) //nolint:errcheck // testing
 	mock.
 		EXPECT().
 		GetHomeDir().
@@ -174,7 +174,7 @@ func TestPlugin_createNpmrc_Registry(t *testing.T) {
 	}
 	p, mock, fs := createTestPlugin(t, c)
 	home := path.Join("usr", "mctestface")
-	fs.MkdirAll(home, 0755) // nolint: errcheck // testing
+	fs.MkdirAll(home, 0755) //nolint:errcheck // testing
 	mock.
 		EXPECT().
 		GetHomeDir().
@@ -208,7 +208,7 @@ func TestPlugin_createNpmrc_Email(t *testing.T) {
 	}
 	p, mock, fs := createTestPlugin(t, c)
 	home := path.Join("usr", "mctestface")
-	fs.MkdirAll(home, 0755) // nolint: errcheck // testing
+	fs.MkdirAll(home, 0755) //nolint:errcheck // testing
 	mock.
 		EXPECT().
 		GetHomeDir().
@@ -243,7 +243,7 @@ func TestPlugin_createNpmrc_StrictSSLSet(t *testing.T) {
 	}
 	p, mock, fs := createTestPlugin(t, c)
 	home := path.Join("usr", "mctestface")
-	fs.MkdirAll(home, 0755) // nolint: errcheck // testing
+	fs.MkdirAll(home, 0755) //nolint:errcheck // testing
 	mock.
 		EXPECT().
 		GetHomeDir().
@@ -278,7 +278,7 @@ func TestPlugin_createNpmrc_AlwaysAuthSet(t *testing.T) {
 	}
 	p, mock, fs := createTestPlugin(t, c)
 	home := path.Join("usr", "mctestface")
-	fs.MkdirAll(home, 0755) // nolint: errcheck // testing
+	fs.MkdirAll(home, 0755) //nolint:errcheck // testing
 	mock.
 		EXPECT().
 		GetHomeDir().
@@ -317,7 +317,7 @@ func TestPlugin_createNpmrc_All(t *testing.T) {
 	}
 	p, mock, fs := createTestPlugin(t, c)
 	home := path.Join("usr", "mctestface")
-	fs.MkdirAll(home, 0755) // nolint: errcheck // testing
+	fs.MkdirAll(home, 0755) //nolint:errcheck // testing
 	mock.
 		EXPECT().
 		GetHomeDir().
