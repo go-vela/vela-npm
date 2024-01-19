@@ -54,7 +54,7 @@ func main() {
 				Aliases:     []string{"u"},
 				Usage:       "name of user",
 				EnvVars:     []string{"PARAMETER_USERNAME", "PLUGIN_USERNAME", "NPM_USERNAME"},
-				FilePath:    string("/vela/parameters/npm/username,/vela/secrets/npm/username,/vela/secrets/auth/username"),
+				FilePath:    string("/vela/parameters/npm/username,/vela/secrets/npm/username,/vela/secrets/managed-auth/username"),
 				DefaultText: "N/A",
 			},
 			&cli.StringFlag{
@@ -62,7 +62,7 @@ func main() {
 				Aliases:     []string{"p"},
 				Usage:       "password for user",
 				EnvVars:     []string{"PARAMETER_PASSWORD", "PLUGIN_PASSWORD", "NPM_PASSWORD"},
-				FilePath:    string("/vela/parameters/npm/password,/vela/secrets/npm/password,/vela/secrets/auth/password"),
+				FilePath:    string("/vela/parameters/npm/password,/vela/secrets/npm/password,/vela/secrets/managed-auth/password"),
 				DefaultText: "N/A",
 			},
 			&cli.StringFlag{
