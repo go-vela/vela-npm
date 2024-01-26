@@ -146,11 +146,11 @@ steps:
 The plugin accepts the following files for authentication:
 
 | Parameter  | Volume Configuration                                          |
-| ---------- | ------------------------------------------------------------- |
-| `password` | `/vela/parameters/npm/password`, `/vela/secrets/npm/password` |
-| `username` | `/vela/parameters/npm/username`, `/vela/secrets/npm/username` |
-| `registry` | `/vela/parameters/npm/registry`, `/vela/secrets/npm/registry` |
-| `email`    | `/vela/parameters/npm/email`, `/vela/secrets/npm/email`       |
+| ---------- | ---------------------------------------------------------------------------------------------------- |
+| `password` | `/vela/parameters/npm/password`, `/vela/secrets/npm/password`, `/vela/secrets/managed-auth/password` |
+| `username` | `/vela/parameters/npm/username`, `/vela/secrets/npm/username`, `/vela/secrets/managed-auth/username` |
+| `registry` | `/vela/parameters/npm/registry`, `/vela/secrets/npm/registry`                                        |
+| `email`    | `/vela/parameters/npm/email`, `/vela/secrets/npm/email`                                              |
 
 Users can use [Vela external secrets](https://go-vela.github.io/docs/concepts/pipeline/secrets/origin/) to substitute these sensitive values at runtime:
 
