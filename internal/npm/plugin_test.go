@@ -11,9 +11,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/go-vela/vela-npm/test"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/spf13/afero"
+
+	"github.com/go-vela/vela-npm/test"
 )
 
 const npmrcDefaults = "json=true\ncolor=false\nloglevel=silent\nupdate-notifier=false\n"

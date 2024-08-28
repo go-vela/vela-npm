@@ -11,9 +11,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/go-vela/vela-npm/internal/shell"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/afero"
+
+	"github.com/go-vela/vela-npm/internal/shell"
 )
 
 // Plugin interface.
@@ -301,7 +302,9 @@ func (p *plugin) createNpmrc() error {
 	} else {
 		// user username/password
 		auth64 := b64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", p.config.UserName, p.config.Password)))
+
 		auth := fmt.Sprintf("%s_auth=%s", registryString, auth64)
+
 		if _, err = f.WriteString(auth + "\n"); err != nil {
 			return fmt.Errorf("failed to write _auth: %w", err)
 		}
@@ -418,7 +421,7 @@ func (p *plugin) validatePackageVersion(nodePackage packageJSON) error {
 		}
 
 		if errResp.ErrorBlock.Code == "ENOTFOUND" { // ENOTFOUND -> not a valid registry
-			return fmt.Errorf(errResp.ErrorBlock.Summary)
+			return errors.New(errResp.ErrorBlock.Summary)
 		} else if errResp.ErrorBlock.Code == "E404" { // E404 -> valid registry but package doesn't exist yet... so it's ours to take!
 			// Notify that we are publishing with a novel package name
 			log.Info("Package does not already exist in the registry, publish will claim `" + nodePackage.Name + "`")
@@ -426,7 +429,7 @@ func (p *plugin) validatePackageVersion(nodePackage packageJSON) error {
 			return nil
 		}
 		// Unknown error response code
-		return fmt.Errorf(errResp.ErrorBlock.Summary)
+		return errors.New(errResp.ErrorBlock.Summary)
 	}
 
 	var versions []string
@@ -473,11 +476,11 @@ func (p *plugin) audit() error {
 		var errResp shell.NPMErrorResponse
 		if err := json.Unmarshal(out, &errResp); (err == nil && errResp != shell.NPMErrorResponse{}) {
 			if errResp.ErrorBlock.Code == "ENOLOCK" { // ENOLOCK -> requires lockfile
-				return fmt.Errorf(errResp.ErrorBlock.Summary + " " + errResp.ErrorBlock.Detail)
+				return errors.New(errResp.ErrorBlock.Summary + " " + errResp.ErrorBlock.Detail)
 			} else if errResp.ErrorBlock.Code == "ENOAUDIT" { // ENOAUDIT -> valid registry but it doesn't support audits
 				log.Warn(errResp.ErrorBlock.Summary + " Try adding a .npmrc to your project directory or set `audit-level: none`.")
 			} else { // Unknown error response code
-				return fmt.Errorf(errResp.ErrorBlock.Summary + " " + errResp.ErrorBlock.Detail)
+				return errors.New(errResp.ErrorBlock.Summary + " " + errResp.ErrorBlock.Detail)
 			}
 		}
 	}
