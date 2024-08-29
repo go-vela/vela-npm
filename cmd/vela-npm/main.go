@@ -136,7 +136,7 @@ func main() {
 			&cli.StringFlag{
 				Name:        "audit-level",
 				Usage:       "The level at which an npm audit will fail - options: (none|low|moderate|high|critical)",
-				Value:       "low",
+				Value:       "none",
 				EnvVars:     []string{"PARAMETER_AUDIT_LEVEL", "PARAMETER_AUDIT", "PLUGIN_AUDIT_LEVEL", "PLUGIN_AUDIT", "AUDIT_LEVEL", "AUDIT"},
 				FilePath:    string("/vela/parameters/npm/audit_level,/vela/secrets/npm/audit_level"),
 				DefaultText: "N/A",

@@ -92,9 +92,9 @@ func (p *Config) Validate() error {
 	case "n", "no", "none":
 		p.AuditLevel = None
 	default:
-		log.Warn("audit_level is not recognized, the npm default (low)")
+		log.Warn("audit_level is not recognized, setting to None")
 
-		p.AuditLevel = Low
+		p.AuditLevel = None
 	}
 
 	log.WithFields(log.Fields{
