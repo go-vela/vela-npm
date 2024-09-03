@@ -91,7 +91,7 @@ func TestConfig_Validate_NormalizeAuditLevel_Default(t *testing.T) {
 		t.Error(err)
 	}
 
-	if c.AuditLevel != Low {
+	if c.AuditLevel != None {
 		t.Error("AuditLevel not defaulted")
 	}
 }
