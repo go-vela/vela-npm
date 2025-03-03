@@ -5,7 +5,7 @@
 ###########################################################################
 
 # build from node LTS Jod https://nodejs.org/en/about/releases/
-FROM node:lts-jod@sha256:ae2f3d4cc65d251352eca01ba668824f651a2ee4d2a37e2efb22649521a483fd
+FROM node:lts-jod@sha256:f6b9c31ace05502dd98ef777aaa20464362435dcc5e312b0e213121dcf7d8b95
 
 COPY release/vela-npm /bin/vela-npm
 
