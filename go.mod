@@ -8,7 +8,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/afero v1.12.0
-	github.com/urfave/cli/v2 v2.27.5
+	github.com/urfave/cli/v2 v2.27.6
 )
 
 require (
