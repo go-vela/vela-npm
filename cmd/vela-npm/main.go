@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 
 	"github.com/go-vela/vela-npm/internal/npm"
 	"github.com/go-vela/vela-npm/version"
