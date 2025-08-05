@@ -4,6 +4,7 @@ package shell
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"os/exec"
@@ -44,7 +45,7 @@ func NewOSContext() OSContext {
 
 // RunCommand used instead of exec.Command.
 func (os *OSContextImpl) RunCommand(name string, args ...string) (bytes.Buffer, error) {
-	cmd := exec.Command(name, args...)
+	cmd := exec.CommandContext(context.Background(), name, args...)
 
 	var outBuffer, errorBuffer bytes.Buffer
 
